@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Swift Developer · Portfolio</title>
+  <meta name="description" content="Portfolio website for an iOS/Swift developer – single‑file, responsive, clean and fast." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --panel: #0f1116;
+      --panel-2: #11131a;
+      --text: #e6e8ee;
+      --muted: #a6adbb;
+      --accent: #7c8cff; /* subtle indigo, iOS‑ish */
+      --accent-2: #62e0a1; /* mint */
+      --card: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      --ring: 0 0 0 1px rgba(124,140,255,.25), 0 0 0 8px rgba(124,140,255,.08);
+      --radius: 20px;
+      --radius-lg: 28px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f7fb;
+        --panel: #ffffff;
+        --panel-2: #ffffff;
+        --text: #111217;
+        --muted: #5b6170;
+        --accent: #5362ff;
+        --accent-2: #2ecc95;
+        --card: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.015));
+        --ring: 0 0 0 1px rgba(83,98,255,.25), 0 0 0 8px rgba(83,98,255,.08);
+        --shadow: 0 8px 24px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,1);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 80% -20%, rgba(124,140,255,.20), transparent 50%),
+                  radial-gradient(900px 600px at -10% 10%, rgba(98,224,161,.18), transparent 40%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      letter-spacing: .2px;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1100px, 92vw); margin: 0 auto; }
+
+    /* --- NAVBAR --- */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; gap: 16px; padding: 14px 0; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight: 700; letter-spacing:.3px; }
+    .logo {
+      width:40px; height:40px; border-radius: 12px;
+      background: radial-gradient(120% 100% at 0% 0%, var(--accent), var(--accent-2));
+      display:grid; place-items:center; box-shadow: var(--shadow);
+      color:white; font-weight:800; font-size: 18px;
+    }
+    .nav a { opacity:.9; }
+    .links { display:flex; gap: 18px; align-items:center; }
+    .ghost {
+      padding: 10px 14px; border-radius: 12px; border:1px solid rgba(255,255,255,.12);
+      background: transparent; color: var(--text); cursor:pointer;
+    }
+    .primary {
+      padding: 11px 16px; border-radius: 14px; border: 0; cursor:pointer;
+      background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 60%, black));
+      color: white; font-weight: 600; box-shadow: 0 10px 20px rgba(124,140,255,.35);
+    }
+
+    /* --- HERO --- */
+    .hero { padding: clamp(48px, 10vw, 96px) 0 32px; }
+    .hero-grid { display:grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items:center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+      background: color-mix(in srgb, var(--panel) 75%, transparent); border: 1px solid rgba(255,255,255,.10);
+      color: var(--muted); font-weight:600; font-size: 12px; letter-spacing:.4px; text-transform:uppercase; }
+    .title { font-size: clamp(34px, 5vw, 56px); line-height:1.1; letter-spacing:-.8px; margin: 14px 0 12px; font-weight: 900; }
+    . subtitle { opacity:.9; }
+    .cta { display:flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+
+    /* --- PHONE MOCKUP --- */
+    .phone { width: min(340px, 80vw); margin: 0 auto; perspective: 900px; }
+    .device { position: relative; border-radius: 42px; padding: 14px; background: linear-gradient(145deg, #1a1d27, #10131a);
+      box-shadow: 0 40px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.07);
+      transform: rotateY(-14deg) rotateX(6deg); transition: transform .4s ease; }
+    .device:hover { transform: rotateY(-6deg) rotateX(2deg) translateY(-4px); }
+    .screen { border-radius: 28px; overflow: hidden; aspect-ratio: 9/19.5; background: #0b0c0f; position: relative; }
+    .notch { position:absolute; top: 0; left: 50%; transform: translateX(-50%); width: 38%; height: 26px; background: #0b0c0f; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+    .app-ui {
+      position:absolute; inset:0; display:grid; grid-template-rows: 1fr auto; padding: 18px; gap: 18px;
+      background: conic-gradient(from 210deg at 70% -20%, rgba(124,140,255,.18), transparent 25%),
+                  radial-gradient(800px 400px at -40% 120%, rgba(98,224,161,.20), transparent 30%);
+    }
+    .widget { border-radius: 18px; padding: 14px; background: var(--card); box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.08); }
+    .app-list { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .chip { display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); font-size: 12px; opacity:.95; }
+
+    /* --- SECTION WRAPPER --- */
+    section { padding: 56px 0; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 18px; gap: 16px; }
+    h2 { font-size: clamp(22px, 3.2vw, 32px); margin: 0; letter-spacing:-.2px; }
+    .muted { color: var(--muted); }
+    .grid { display:grid; gap: 16px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } .grid-2{ grid-template-columns: 1fr; } }
+
+    /* --- CARDS --- */
+    .card {
+      background: var(--card); border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+      transition: transform .25s ease, border-color .25s ease; position: relative; overflow: clip;
+    }
+    .card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 34%, transparent); }
+    .card .tag { position:absolute; top: 16px; right: 16px; font-size: 12px; color: var(--muted); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; background: color-mix(in srgb, var(--panel-2) 80%, transparent); }
+    .card h3 { margin: 6px 0 6px; letter-spacing:-.2px; }
+    .card p { margin: 0; color: var(--muted); }
+    .actions { display:flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .btn { padding: 10px 12px; border-radius: 12px; border:1px solid rgba(255,255,255,.16); background: transparent; color: var(--text); font-weight: 600; cursor:pointer; }
+    .btn.accent { border:0; background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 55%, black)); color: white; }
+
+    /* --- LISTS / CHIPS --- */
+    .chips { display:flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+    /* --- TIMELINE --- */
+    .timeline { position: relative; padding-left: 22px; }
+    .timeline:before { content:""; position:absolute; left: 9px; top: 0; bottom: 0; width: 2px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
+    .tl-item { position:relative; margin: 12px 0; padding-left: 8px; }
+    .tl-item:before { content:""; position:absolute; left: -13px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
+    .company { font-weight: 700; }
+
+    /* --- FOOTER --- */
+    footer { padding: 26px 0 60px; color: var(--muted); }
+    .foot { display:flex; align-items:center; justify-content:space-between; gap: 16px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 18px; flex-wrap: wrap; }
+
+    /* --- UTIL --- */
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; font-size: 12px; padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">
+        <div class="logo" aria-hidden="true">S</div>
+        <span>Swift Developer</span>
+      </a>
+      <div class="links">
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+        <button class="ghost" id="copyEmail" title="Copy email to clipboard">Copy <span class="kbd">⌘</span> + <span class="kbd">C</span> Email</button>
+        <a class="primary" href="#contact">Hire Me</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top" class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">iOS • Swift • SwiftUI • Combine</span>
+          <h1 class="title">I craft native iOS apps with pixel‑perfect SwiftUI and rock‑solid architecture.</h1>
+          <p class="muted">Clean architecture (MVVM/TCA), Core Data, background tasks, async/await, widgets, push, StoreKit, TestFlight, and App Store delivery. Built with care for performance and accessibility.</p>
+          <div class="cta">
+            <a class="primary" href="#projects">See Projects</a>
+            <a class="ghost" href="#contact">Download CV (PDF)</a>
+          </div>
+          <div class="chips" aria-label="Highlights">
+            <span class="chip">Swift 5.10</span>
+            <span class="chip">SwiftUI</span>
+            <span class="chip">UIKit</span>
+            <span class="chip">Core Data</span>
+            <span class="chip">BackgroundTasks</span>
+            <span class="chip">CloudKit</span>
+            <span class="chip">StoreKit</span>
+            <span class="chip">XCTest</span>
+          </div>
+        </div>
+        <div class="phone" aria-label="iPhone App Mockup">
+          <div class="device">
+            <div class="screen">
+              <div class="notch" aria-hidden="true"></div>
+              <div class="app-ui">
+                <div class="widget">
+                  <strong>Daily Focus</strong>
+                  <p class="muted">A lightweight task manager built with SwiftUI + Core Data. Widgets, reminders, and beautiful animations.</p>
+                  <div class="chips"><span class="chip">App Intents</span><span class="chip">Widgets</span><span class="chip">Animations</span></div>
+                </div>
+                <div class="app-list">
+                  <div class="widget">
+                    <strong>HealthKit</strong>
+                    <p class="muted">Steps & heart rate trends.</p>
+                  </div>
+                  <div class="widget">
+                    <strong>Weather</strong>
+                    <p class="muted">Live charts with Combine.</p>
+                  </div>
+                  <div class="widget">
+                    <strong>Finance</strong>
+                    <p class="muted">StoreKit 2 subscriptions.</p>
+                  </div>
+                  <div class="widget">
+                    <strong>Travel</strong>
+                    <p class="muted">Offline maps + CoreData.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-head">
+        <h2>Featured Projects</h2>
+        <span class="muted">Production‑ready, shipped to the App Store.</span>
+      </div>
+      <div class="grid grid-3">
+        <article class="card">
+          <span class="tag">SwiftUI • TCA</span>
+          <h3>FocusFlow</h3>
+          <p>Task manager with deep‑linking, App Intents, Lock‑Screen widgets, and iCloud sync via CloudKit.</p>
+          <div class="chips">
+            <span class="chip">MVVM</span>
+            <span class="chip">CloudKit</span>
+            <span class="chip">App Intents</span>
+            <span class="chip">Widgets</span>
+          </div>
+          <div class="actions">
+            <a class="btn accent" href="#">View Case Study</a>
+            <a class="btn" href="#">GitHub</a>
+          </div>
+        </article>
+        <article class="card">
+          <span class="tag">UIKit • Combine</span>
+          <h3>PulseWatch</h3>
+          <p>HealthKit powered trends with background delivery, charts, and local notifications. Supports Family Sharing.</p>
+          <div class="chips">
+            <span class="chip">HealthKit</span>
+            <span class="chip">Charts</span>
+            <span class="chip">Notifications</span>
+          </div>
+          <div class="actions">
+            <a class="btn accent" href="#">Read More</a>
+            <a class="btn" href="#">GitHub</a>
+          </div>
+        </article>
+        <article class="card">
+          <span class="tag">StoreKit 2</span>
+          <h3>Budget Mint</h3>
+          <p>Subscriptions with StoreKit 2, receipt validation, and paywall A/B tests. Offline first with Core Data.</p>
+          <div class="chips">
+            <span class="chip">Core Data</span>
+            <span class="chip">Paywalls</span>
+            <span class="chip">A/B Testing</span>
+          </div>
+          <div class="actions">
+            <a class="btn accent" href="#">See Details</a>
+            <a class="btn" href="#">GitHub</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="section-head">
+        <h2>Core Skills</h2>
+        <span class="muted">What I ship with confidence</span>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Architecture</h3>
+          <p>MVVM, TCA, Clean Architecture, dependency injection, modularization, reusable UI components, and snapshot testing.</p>
+          <div class="chips">
+            <span class="chip">Swift</span>
+            <span class="chip">SwiftUI</span>
+            <span class="chip">UIKit</span>
+            <span class="chip">Combine</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Data & Offline</h3>
+          <p>Core Data with NSPersistentCloudKitContainer, background syncing, and async/await networking with URLSession.</p>
+          <div class="chips">
+            <span class="chip">Core Data</span>
+            <span class="chip">CloudKit</span>
+            <span class="chip">URLSession</span>
+            <span class="chip">BackgroundTasks</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Product Quality</h3>
+          <p>Accessibility (VoiceOver, Dynamic Type), performance profiling, XCTest, UI tests, and Crash + Analytics tracing.</p>
+          <div class="chips">
+            <span class="chip">XCTest</span>
+            <span class="chip">Accessibility</span>
+            <span class="chip">Instruments</span>
+            <span class="chip">TestFlight</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="section-head">
+        <h2>Experience</h2>
+        <span class="muted">Recent roles & milestones</span>
+      </div>
+      <div class="card">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="company">Senior iOS Engineer · Freelance</div>
+            <div class="muted">2023 — Present · Shipped 6 client apps, 4 live in App Store</div>
+          </div>
+          <div class="tl-item">
+            <div class="company">iOS Engineer · Startup XYZ</div>
+            <div class="muted">2021 — 2023 · Rebuilt app in SwiftUI, +38% retention</div>
+          </div>
+          <div class="tl-item">
+            <div class="company">B.Eng · Computer Science</div>
+            <div class="muted">Graduated with focus on mobile & HCI</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="section-head">
+        <h2>Contact</h2>
+        <span class="muted">Let’s build your next iOS app</span>
+      </div>
+      <div class="grid grid-2">
+        <form class="card" onsubmit="event.preventDefault(); alert('Thanks! I\'ll get back to you soon.');">
+          <label class="sr-only" for="name">Name</label>
+          <input id="name" name="name" placeholder="Your name" required style="width:100%; padding:12px 14px; margin-bottom:10px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--text);">
+
+          <label class="sr-only" for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="Email address" required style="width:100%; padding:12px 14px; margin-bottom:10px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--text);">
+
+          <label class="sr-only" for="msg">Message</label>
+          <textarea id="msg" name="message" rows="5" placeholder="Tell me about your project…" required style="width:100%; padding:12px 14px; margin-bottom:10px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background: color-mix(in srgb, var(--panel) 70%, transparent); color: var(--text);"></textarea>
+
+          <button class="primary" type="submit">Send Message</button>
+        </form>
+        <div class="card">
+          <h3>Availability</h3>
+          <p class="muted">Open for freelance and full‑time roles. Based in India (IST). Comfortable with async collaboration.</p>
+          <div class="chips" style="margin-top:14px;">
+            <span class="chip">Remote‑first</span>
+            <span class="chip">UTC+5:30</span>
+            <span class="chip">English • Tamil</span>
+          </div>
+          <div class="actions" style="margin-top:16px;">
+            <a class="btn accent" href="mailto:hello@example.com">Email Me</a>
+            <button class="btn" id="copyEmail2">Copy Email</button>
+          </div>
+          <p class="muted" style="margin-top: 12px;">Tip: Press <span class="kbd">/</span> to quick‑search links on this page.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <span>© <span id="year"></span> Swift Developer. Built with semantic HTML, zero‑framework CSS, and tiny JS.</span>
+      <div class="chips">
+        <span class="chip">Lighthouse 100</span>
+        <span class="chip">A11y friendly</span>
+        <span class="chip">Responsive</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth scroll for same‑page anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href');
+        if (id.length > 1) {
+          e.preventDefault();
+          document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Copy email to clipboard
+    const email = 'hello@example.com';
+    const copyBtns = [document.getElementById('copyEmail'), document.getElementById('copyEmail2')].filter(Boolean);
+    copyBtns.forEach(btn => btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(email);
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = btn.id === 'copyEmail' ? 'Copy ⌘ + C Email' : 'Copy Email', 1400);
+      } catch (err) { alert('Copy failed, email: ' + email); }
+    }));
+
+    // Keyboard shortcut: / to focus search (simulate by jumping to Projects)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) {
+        e.preventDefault();
+        document.getElementById('projects').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  </script>
+</body>
+</html>
